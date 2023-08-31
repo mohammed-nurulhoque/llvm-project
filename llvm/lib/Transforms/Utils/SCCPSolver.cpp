@@ -217,10 +217,30 @@ static bool replaceSignedInst(SCCPSolver &Solver,
 
 bool SCCPSolver::simplifyInstsInBlock(BasicBlock &BB,
                                       SmallPtrSetImpl<Value *> &InsertedValues,
+                                      SmallPtrSetImpl<Function *> &SkippedFuncs,
                                       Statistic &InstRemovedStat,
                                       Statistic &InstReplacedStat) {
-  bool MadeChanges = false;
+  // If we encounter a tail-call, that is a function call followed by returning
+  // the call result, don't try to simplify the call result. Otherwise, later
+  // passes cannot detect that this was a tail-call.
+  bool MadeChanges = false, SkipTailCall  = false;
+  Instruction* Ret  = BB.getTerminator();
+  Instruction* Call = Ret->getPrevNode();
+  if (Call && isa<ReturnInst>(Ret) && isa<CallInst>(Call) &&
+      Ret->getNumOperands() && Call == Ret->getOperand(0) &&
+      !Call->isSafeToRemove())
+  {
+    SkipTailCall  = true;
+    SkippedFuncs.insert(cast<CallInst>(Call)->getCalledFunction());
+  }
+
   for (Instruction &Inst : make_early_inc_range(BB)) {
+    if (&Inst == Call && SkipTailCall ) {
+      // skip the remaining instructions, which is the tail call pattern checked
+      // before the loop
+      return MadeChanges;
+    }
+
     if (Inst.getType()->isVoidTy())
       continue;
     if (tryToReplaceWithConstant(&Inst)) {

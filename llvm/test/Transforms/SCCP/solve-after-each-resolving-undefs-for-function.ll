@@ -18,7 +18,7 @@ if.end:                                          ; preds = %if.then1, %entry
 }
 
 ; CHECK-LABEL: @test1(
-; CHECK:         ret i32 undef
+; CHECK:         ret i32 99
 ;
 define internal i32 @test1(i1 %c) {
 entry:
@@ -38,7 +38,7 @@ ret2:                                           ; preds = %if.then, %entry
 
 ; CHECK-LABEL: @main(
 ; CHECK-NEXT:    %res = call i32 @test1(
-; CHECK-NEXT:    ret i32 99
+; CHECK-NEXT:    ret i32 %res
 ;
 define i32 @main(i1 %c) {
   %res = call i32 @test1(i1 %c)

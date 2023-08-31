@@ -169,6 +169,7 @@ static bool runIPSCCP(
   // Iterate over all of the instructions in the module, replacing them with
   // constants if we have found them to be of constant values.
   bool MadeChanges = false;
+  SmallPtrSet<Function *, 1> SkippedReturns;
   for (Function &F : M) {
     if (F.isDeclaration())
       continue;
@@ -224,8 +225,9 @@ static bool runIPSCCP(
         continue;
       }
 
-      MadeChanges |= Solver.simplifyInstsInBlock(
-          BB, InsertedValues, NumInstRemoved, NumInstReplaced);
+      MadeChanges |= Solver.simplifyInstsInBlock(BB,
+                                          InsertedValues, SkippedReturns,
+                                          NumInstRemoved, NumInstReplaced);
     }
 
     DominatorTree *DT = FAM->getCachedResult<DominatorTreeAnalysis>(F);
@@ -328,6 +330,7 @@ static bool runIPSCCP(
   SmallSetVector<Function *, 8> FuncZappedReturn;
   for (ReturnInst *RI : ReturnsToZap) {
     Function *F = RI->getParent()->getParent();
+    if (SkippedReturns.count(F)) continue;
     RI->setOperand(0, UndefValue::get(F->getReturnType()));
     // Record all functions that are zapped.
     FuncZappedReturn.insert(F);

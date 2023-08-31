@@ -91,6 +91,7 @@ static bool runSCCP(Function &F, const DataLayout &DL,
 
   SmallPtrSet<Value *, 32> InsertedValues;
   SmallVector<BasicBlock *, 8> BlocksToErase;
+  SmallPtrSet<Function *, 1> SkippedReturns;
   for (BasicBlock &BB : F) {
     if (!Solver.isBlockExecutable(&BB)) {
       LLVM_DEBUG(dbgs() << "  BasicBlock Dead:" << BB);
@@ -100,8 +101,9 @@ static bool runSCCP(Function &F, const DataLayout &DL,
       continue;
     }
 
-    MadeChanges |= Solver.simplifyInstsInBlock(BB, InsertedValues,
-                                               NumInstRemoved, NumInstReplaced);
+    MadeChanges |= Solver.simplifyInstsInBlock(BB,
+                                        InsertedValues, SkippedReturns,
+                                        NumInstRemoved, NumInstReplaced);
   }
 
   // Remove unreachable blocks and non-feasible edges.

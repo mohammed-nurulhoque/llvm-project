@@ -1,5 +1,5 @@
-; RUN: opt < %s -passes=ipsccp -S | grep -v "ret i101 0" | \
-; RUN:    grep -v "ret i101 undef" | not grep ret
+; RUN: opt < %s -passes=ipsccp -S | grep -v "ret i101 %X" | \
+; RUN:    grep -v "ret i101 0" | not grep ret
 
 
 define internal i101 @bar(i101 %A) {

@@ -4,9 +4,9 @@
 
 ;;======================== test1
 
-define internal i32 @test1a(i32 %A) {
+define internal i32 @test1a(i32 %A) #0 {
 ; CHECK-LABEL: define internal i32 @test1a
-; CHECK-SAME: (i32 [[A:%.*]]) {
+; CHECK-SAME: (i32 [[A:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:    ret i32 undef
 ;
   %X = add i32 1, 2
@@ -15,7 +15,6 @@ define internal i32 @test1a(i32 %A) {
 
 define i32 @test1b() {
 ; CHECK-LABEL: define i32 @test1b() {
-; CHECK-NEXT:    [[X:%.*]] = call i32 @test1a(i32 17)
 ; CHECK-NEXT:    ret i32 17
 ;
   %X = call i32 @test1a( i32 17 )
@@ -27,12 +26,11 @@ define i32 @test1b() {
 
 ;;======================== test2
 
-define internal i32 @test2a(i32 %A) {
+define internal i32 @test2a(i32 %A) #0 {
 ; CHECK-LABEL: define internal i32 @test2a
-; CHECK-SAME: (i32 [[A:%.*]]) {
+; CHECK-SAME: (i32 [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:    br label [[T:%.*]]
 ; CHECK:       T:
-; CHECK-NEXT:    [[B:%.*]] = call i32 @test2a(i32 0)
 ; CHECK-NEXT:    ret i32 undef
 ;
   %C = icmp eq i32 %A, 0
@@ -47,7 +45,6 @@ F:
 
 define i32 @test2b() {
 ; CHECK-LABEL: define i32 @test2b() {
-; CHECK-NEXT:    [[X:%.*]] = call i32 @test2a(i32 0)
 ; CHECK-NEXT:    ret i32 0
 ;
   %X = call i32 @test2a(i32 0)
@@ -108,7 +105,6 @@ define i64 @test4b() personality ptr @__gxx_personality_v0 {
 ; CHECK-NEXT:    [[A:%.*]] = invoke { i64, i64 } @test4a()
 ; CHECK-NEXT:    to label [[A:%.*]] unwind label [[B:%.*]]
 ; CHECK:       A:
-; CHECK-NEXT:    [[C:%.*]] = call i64 @test4c(i64 5)
 ; CHECK-NEXT:    ret i64 5
 ; CHECK:       B:
 ; CHECK-NEXT:    [[VAL:%.*]] = landingpad { ptr, i32 }
@@ -127,9 +123,9 @@ B:
   ret i64 0
 }
 
-define internal i64 @test4c(i64 %a) {
+define internal i64 @test4c(i64 %a) #0 {
 ; CHECK-LABEL: define internal i64 @test4c
-; CHECK-SAME: (i64 [[A:%.*]]) {
+; CHECK-SAME: (i64 [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:    ret i64 undef
 ;
   ret i64 %a
@@ -152,7 +148,6 @@ define i64 @test5b() personality ptr @__gxx_personality_v0 {
 ; CHECK-NEXT:    [[A:%.*]] = invoke { i64, i64 } @test5a()
 ; CHECK-NEXT:    to label [[A:%.*]] unwind label [[B:%.*]]
 ; CHECK:       A:
-; CHECK-NEXT:    [[C:%.*]] = call i64 @test5c({ i64, i64 } { i64 5, i64 4 })
 ; CHECK-NEXT:    ret i64 5
 ; CHECK:       B:
 ; CHECK-NEXT:    [[VAL:%.*]] = landingpad { ptr, i32 }
@@ -170,9 +165,9 @@ B:
   ret i64 0
 }
 
-define internal i64 @test5c({i64,i64} %a) {
+define internal i64 @test5c({i64,i64} %a) #0 {
 ; CHECK-LABEL: define internal i64 @test5c
-; CHECK-SAME: ({ i64, i64 } [[A:%.*]]) {
+; CHECK-SAME: ({ i64, i64 } [[A:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:    ret i64 undef
 ;
   %b = extractvalue {i64,i64} %a, 0
@@ -182,8 +177,9 @@ define internal i64 @test5c({i64,i64} %a) {
 
 ;;======================== test6
 
-define i64 @test6a() {
-; CHECK-LABEL: define i64 @test6a() {
+define i64 @test6a() #0 {
+; CHECK-LABEL: define i64 @test6a
+; CHECK-SAME: () #[[ATTR0]] {
 ; CHECK-NEXT:    ret i64 0
 ;
   ret i64 0
@@ -191,7 +187,6 @@ define i64 @test6a() {
 
 define i64 @test6b() {
 ; CHECK-LABEL: define i64 @test6b() {
-; CHECK-NEXT:    [[A:%.*]] = call i64 @test6a()
 ; CHECK-NEXT:    ret i64 0
 ;
   %a = call i64 @test6a()
@@ -271,7 +266,7 @@ declare i32 @__gxx_personality_v0(...)
 
 define i32 @test10a() nounwind {
 ; CHECK-LABEL: define i32 @test10a
-; CHECK-SAME: () #[[ATTR0:[0-9]+]] {
+; CHECK-SAME: () #[[ATTR1:[0-9]+]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CALL:%.*]] = call i32 @test10b(i32 undef)
 ; CHECK-NEXT:    ret i32 [[CALL]]
@@ -284,7 +279,7 @@ entry:
 
 define internal i32 @test10b(i32 %x) nounwind {
 ; CHECK-LABEL: define internal i32 @test10b
-; CHECK-SAME: (i32 [[X:%.*]]) #[[ATTR0]] {
+; CHECK-SAME: (i32 [[X:%.*]]) #[[ATTR1]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[R:%.*]] = and i32 undef, 1
 ; CHECK-NEXT:    ret i32 [[R]]
@@ -332,3 +327,4 @@ define i1 @test12() {
 }
 
 declare i1 @llvm.is.constant.sl_i32i32s({i32, i32} %a)
+attributes #0 = { noinline readnone nounwind willreturn }

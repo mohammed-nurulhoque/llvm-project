@@ -104,7 +104,7 @@ define internal i32 @indbrtest5(i1 %c) {
 ; CHECK:       target1:
 ; CHECK-NEXT:    br label [[TARGET2]]
 ; CHECK:       target2:
-; CHECK-NEXT:    ret i32 undef
+; CHECK-NEXT:    ret i32 10
 ;
 entry:
   br i1 %c, label %bb1, label %bb2
@@ -131,7 +131,7 @@ target2:
 define i32 @indbrtest5_callee(i1 %c) {
 ; CHECK-LABEL: @indbrtest5_callee(
 ; CHECK-NEXT:    [[R:%.*]] = call i32 @indbrtest5(i1 [[C:%.*]])
-; CHECK-NEXT:    ret i32 10
+; CHECK-NEXT:    ret i32 [[R]]
 ;
   %r = call i32 @indbrtest5(i1 %c)
   ret i32 %r

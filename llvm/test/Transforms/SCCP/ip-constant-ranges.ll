@@ -295,7 +295,7 @@ define internal i32 @callee6.2(i32 %i) {
 ; CHECK-SAME: (i32 [[I:%.*]]) {
 ; CHECK-NEXT:    br label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    ret i32 undef
+; CHECK-NEXT:    ret i32 1
 ;
 
   %cmp = icmp ne i32 %i, 0

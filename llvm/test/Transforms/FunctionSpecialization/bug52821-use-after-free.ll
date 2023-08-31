@@ -42,7 +42,7 @@ define ptr @caller() {
 ; CHECK-LABEL: @caller(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CALL:%.*]] = call ptr @myfunc(ptr undef)
-; CHECK-NEXT:    ret ptr undef
+; CHECK-NEXT:    ret ptr [[CALL]]
 ;
 entry:
   %call = call ptr @myfunc(ptr undef)

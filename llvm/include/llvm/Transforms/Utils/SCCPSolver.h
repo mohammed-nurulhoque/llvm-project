@@ -183,6 +183,7 @@ public:
 
   bool simplifyInstsInBlock(BasicBlock &BB,
                             SmallPtrSetImpl<Value *> &InsertedValues,
+                            SmallPtrSetImpl<Function *> &SkippedFuncs,
                             Statistic &InstRemovedStat,
                             Statistic &InstReplacedStat);
 

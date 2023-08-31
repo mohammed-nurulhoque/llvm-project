@@ -101,7 +101,7 @@ define void @call_range(ptr %p) {
 
 define internal i1 @ip_cmp_range(i32 %v) {
 ; CHECK-LABEL: @ip_cmp_range(
-; CHECK-NEXT:    ret i1 undef
+; CHECK-NEXT:    ret i1 true
 ;
   %c = icmp ult i32 %v, 10
   ret i1 %c
@@ -111,7 +111,7 @@ define i1 @ip_load_range(ptr %p) {
 ; CHECK-LABEL: @ip_load_range(
 ; CHECK-NEXT:    [[V:%.*]] = load i32, ptr [[P:%.*]], align 4, !range !0
 ; CHECK-NEXT:    [[C:%.*]] = call i1 @ip_cmp_range(i32 [[V]])
-; CHECK-NEXT:    ret i1 true
+; CHECK-NEXT:    ret i1 [[C]]
 ;
   %v = load i32, ptr %p, !range !{i32 0, i32 10}
   %c = call i1 @ip_cmp_range(i32 %v)

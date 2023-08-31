@@ -4,7 +4,7 @@
 define internal i32 @f1(i32 %x) {
 ; CHECK-LABEL: define {{[^@]+}}@f1
 ; CHECK-SAME: (i32 [[X:%.*]]) {
-; CHECK-NEXT:    ret i32 undef
+; CHECK-NEXT:    ret i32 2
 ;
   %cmp = icmp sgt i32 %x, 300
   %res = select i1 %cmp, i32 1, i32 2
@@ -22,7 +22,7 @@ define i32 @caller1(i1 %cmp) {
 ; CHECK:       end:
 ; CHECK-NEXT:    [[RES:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ 1, [[IF_TRUE]] ]
 ; CHECK-NEXT:    [[CALL1:%.*]] = tail call i32 @f1(i32 [[RES]])
-; CHECK-NEXT:    ret i32 2
+; CHECK-NEXT:    ret i32 [[CALL1]]
 ;
 
 
